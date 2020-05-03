@@ -1,0 +1,25 @@
+﻿@namespace YParser
+@classname YWhitespace
+@accessibility internal
+@using System.Globalization
+@using System.Linq
+@using YGrammar
+@using YGrammar.Expressions
+@trace true
+
+Newline -export
+    = "\r\n"
+    / "\n"
+    { "" }
+
+Comment -export
+    = "//" (!Newline .)* Newline
+    { "" }
+
+_ -export
+    = ([ \t]/Newline)*
+    { "" }
+
+EOF -export
+    = !.
+    / unexpected:. #error{ "Unexpected character '" + unexpected + "'." }

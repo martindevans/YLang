@@ -2,7 +2,7 @@
 import "bar";
 import "bash" in baz;
 
-const a:core.number = expression:todo;
+const a:core.number = todo:expression;
 
 struct hello {
 	a:b,
@@ -10,8 +10,8 @@ struct hello {
 }
 
 proc foo(a:b, copy c:d) -> core.number
-	requires expr:todo;
-	ensures expr:todo;
+	requires todo:expression;
+	ensures todo:expression;
 {
 	body:todo
 }

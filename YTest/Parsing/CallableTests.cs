@@ -88,7 +88,7 @@ namespace YTest.Parsing
         [TestMethod]
         public void Contracts()
         {
-            var p = Parser.ParseProgram("macro hello() requires expr:todo; ensures expr:todo; { body:todo }");
+            var p = Parser.ParseProgram("macro hello() requires todo:expression; ensures todo:expression; { body:todo }");
 
             Assert.That.IsTrue(p.IsOk, () => p.Err.ToString());
             Assert.AreEqual(1, p.Ok.Callables.Count);

@@ -1,0 +1,26 @@
+﻿@namespace YParser
+@classname YValues
+@accessibility internal
+@using System.Globalization
+@using System.Linq
+@using YGrammar
+@using YGrammar.Expressions
+@trace true
+
+String <String> -export
+    = "\"" chars:unicode* ("\"" / #ERROR{ "Expected '\"'" }) { string.Concat(chars) }
+
+unicode
+    = c:. !{c == "\\" || c == "\"" || char.IsControl(c[0])} { c }
+    / "\\" c:(
+        e:["\/\\] { e } /
+        "b" { "\b" } /
+        "f" { "\f" } /
+        "n" { "\n" } /
+        "r" { "\r" } /
+        "t" { "\t" } /
+        "u" digits:("" [0-9A-F]i<4>) { ((char)Convert.ToInt32(digits, 16)).ToString() }
+    ) { c }
+
+Number <decimal> -export
+    = s:("-"? [0-9]+ ("." [0-9]+)?) { decimal.Parse(s) }

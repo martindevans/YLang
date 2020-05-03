@@ -1,0 +1,27 @@
+﻿@namespace YParser
+@classname YExpressions
+@accessibility internal
+@using System.Globalization
+@using System.Linq
+@using YGrammar
+@using YGrammar.Expressions
+@trace true
+
+@members
+{
+    private readonly YValues _values = new YValues();
+    private readonly YWhitespace _ws = new YWhitespace();
+}
+
+Expression <BaseExpression> -export
+    = "todo:expression" { null }
+
+// ########################################
+// Imported Rules
+
+number <decimal> = #parse{ this._values.Exported.Number(ref state) }
+string <string> = #parse{ this._values.Exported.String(ref state) }
+newline = #parse{ this._ws.Exported.Newline(ref state) }
+comment = #parse{ this._ws.Exported.Comment(ref state) }
+_ = #parse{ this._ws.Exported._(ref state) }
+EOF = #parse{ this._ws.Exported.EOF(ref state) }

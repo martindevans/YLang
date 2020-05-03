@@ -5,7 +5,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="YExpressions.pegasus" />
     <None Remove="YGrammar.pegasus" />
+    <None Remove="YValues.pegasus" />
+    <None Remove="YWhitespace.pegasus" />
   </ItemGroup>
 
   <ItemGroup>
@@ -14,6 +17,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PegGrammar Include="YWhitespace.pegasus" />
+    <PegGrammar Include="YValues.pegasus" />
+    <PegGrammar Include="YExpressions.pegasus" />
     <PegGrammar Include="YGrammar.pegasus" />
   </ItemGroup>
 
