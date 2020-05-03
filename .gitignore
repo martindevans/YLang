@@ -1,0 +1,10 @@
+.vs
+_NCrunch_YLang
+_ReSharper.Caches
+
+*/bin
+*/obj
+
+*.ncrunchproject
+*.ncrunchsolution
+*.ncrunchsolution.user

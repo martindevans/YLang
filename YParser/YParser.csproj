@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="YGrammar.pegasus" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Pegasus" Version="4.1.0" />
+    <PackageReference Include="Yolol" Version="3.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PegGrammar Include="YGrammar.pegasus" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\YGrammar\YGrammar.csproj" />
+  </ItemGroup>
+
+</Project>

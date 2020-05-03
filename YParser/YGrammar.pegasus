@@ -1,0 +1,117 @@
+﻿@namespace YParser
+@classname YParser
+@accessibility internal
+@using System.Globalization
+@using System.Linq
+@using YGrammar
+@using YGrammar.OuterStatements
+@using YGrammar.InnerStatements
+@using YGrammar.Expressions
+@start program
+@trace true
+
+program <Program>
+    = i:import<0,, (comment / _)>
+    _ con:constant<0,, (comment / _)>
+    _ str:structdef<0,, (comment / _)>
+    _ cal:callable<0,, (comment / _)>
+    _ m:main?
+    _ EOF
+    { new Program(i.ToArray(), con.ToArray(), str.ToArray(), cal.ToArray(), m.SingleOrDefault()) }
+
+import <Import>
+    = "import" _ p:string _ ns:namespace _ ";" { new Import(p, ns) }
+
+namespace <Identifier?>
+    = "in" _ ns:nested_identifier { ns }
+    / { null }
+
+structdef <StructDefinition>
+    = "struct" _ n:simple_identifier _ "{" _ f:fielddef<0,,_ "," _> _ "}" { new StructDefinition(n, f.ToArray()) }
+
+fielddef <FieldDefinition>
+    = n:simple_identifier _ ":" _ t:nested_identifier { new FieldDefinition(n, t) }
+
+constant <Constant>
+    = "const" _ f:fielddef _ "=" _ "expression:todo" _ ";" { new Constant(f, null) }
+
+
+
+main <MainBody>
+    = "main" _ "{" _ "body:todo" _ "}" { new MainBody(Array.Empty<BaseOuterStatement>()) }
+
+// ########################################
+// Calls
+
+callable <CallableDefinition>
+    = c:calltype _ n:simple_identifier _ "(" _ a:arglist _ ")" _ r:call_return_type _ w:contract<0,,_> _ "{" _ "body:todo" _ "}" { new CallableDefinition(n, c, a, r, null, w.ToArray()) }
+
+contract <Contract>
+    = "requires" _ "expr:todo" _ ";" { null }
+    / "ensures" _ "expr:todo" _ ";" { null }
+
+call_return_type <Identifier?>
+    = "->" _ i:nested_identifier { i }
+    / { null }
+
+calltype <CallType>
+    = "proc" { CallType.Goto }
+    / "macro" { CallType.Inline }
+
+arglist <IReadOnlyList<ParameterDefinition>>
+    = a:arg<0,,_ "," _> { a.ToArray() }
+
+arg <ParameterDefinition>
+    = c:"copy"? _ f:fielddef { new ParameterDefinition(f, c.Count == 1) }
+
+// ########################################
+// Identifiers
+
+nested_identifier <Identifier>
+    = t:simple_identifier<1,,".">
+    { new Identifier(t.Select(a => a.Path[0]).ToArray()) }
+
+simple_identifier <Identifier>
+    = s:([a-zA-Z_][a-zA-Z0-9_]<0,>)
+    { new Identifier(new[] { s }) }
+
+// ########################################
+// Space
+
+newline
+    = "\r\n"
+    / "\n"
+    { "" }
+
+comment
+    = "//" (!newline .)* newline
+    { "" }
+
+_
+    = ([ \t]/newline)*
+    { "" }
+
+EOF
+    = !.
+    / unexpected:. #error{ "Unexpected character '" + unexpected + "'." }
+
+// ########################################
+// Primitive Values
+
+string <String>
+    = "\"" chars:unicode* ("\"" / #ERROR{ "Expected '\"'" }) { string.Concat(chars) }
+
+unicode
+    = c:. !{c == "\\" || c == "\"" || char.IsControl(c[0])} { c }
+    / "\\" c:(
+        e:["\/\\] { e } /
+        "b" { "\b" } /
+        "f" { "\f" } /
+        "n" { "\n" } /
+        "r" { "\r" } /
+        "t" { "\t" } /
+        "u" digits:("" [0-9A-F]i<4>) { ((char)Convert.ToInt32(digits, 16)).ToString() }
+    ) { c }
+
+number <decimal>
+    = s:("-"? [0-9]+ ("." [0-9]+)?) { decimal.Parse(s) }
